@@ -1,10 +1,13 @@
 import io from "socket.io-client";
+import dotenv from 'dotenv';
+
+dotenv.config(); // Load environment variables
 import React from 'react';
 import store from '../store';
 import lobbySlice from "../lobbySlice";
 
-export const socket = io.connect('https://sloticon.onrender.com');
-// export const socket = io.connect('http://localhost:3001');
+// export const socket = io.connect('https://sloticon.onrender.com');
+export const socket = io.connect('http://localhost:3001');
 export const SocketContext = React.createContext();
 
 socket.on('connect', () => {
