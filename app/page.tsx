@@ -1,6 +1,9 @@
 import React from 'react';
+import useSocket from './socket';
 
 const Page: React.FC = () => {
+  useSocket(); // Establish socket connection
+
   return (
     <div>
       <h1>Welcome to Sloticon</h1>

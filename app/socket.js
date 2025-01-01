@@ -1,45 +1,20 @@
-import io from "socket.io-client";
-import dotenv from 'dotenv';
+import { useEffect } from "react";
+import { io } from "socket.io-client";
 
-dotenv.config(); // Load environment variables
-import React from 'react';
-import store from '../store';
-import lobbySlice from "../lobbySlice";
+const SOCKET_URL = process.env.SOCKET_URL || "http://localhost:3000/socket";
 
-// export const socket = io.connect('https://sloticon.onrender.com');
-export const socket = io.connect('http://localhost:3001');
-export const SocketContext = React.createContext();
+const useSocket = () => {
+  useEffect(() => {
+    const socket = io(SOCKET_URL);
 
-socket.on('connect', () => {
-
-  socket.emit('login', {
-    key: localStorage.getItem('key'),
-  });
-  const waitForLoginTimeout = setTimeout(() => {
-    // propably invalid key in localStorage
-    localStorage.removeItem('key');
-
-    socket.emit('login', {
-      key: localStorage.getItem('key'),
+    socket.on("connect", () => {
+      console.log("Connected to socket server");
     });
-  }, 5000);
 
-  socket.on('login', (data) => {
-    clearTimeout(waitForLoginTimeout);
+    return () => {
+      socket.disconnect();
+    };
+  }, []);
+};
 
-    if (data.status === 'logged-in') {
-      localStorage.setItem('key', data.key);
-
-      store.dispatch(lobbySlice.actions.updateLoginState({
-        status: data.status,
-        username: data.username,
-      }));
-      store.dispatch(lobbySlice.actions.updateBalance(data.balance));
-    }
-  });
-});
-
-socket.on('disconnect', () => {
-  store.dispatch(lobbySlice.actions.updateLoginState('logged-out'));
-  store.dispatch(lobbySlice.actions.updateBalance(0));
-});
+export default useSocket;
