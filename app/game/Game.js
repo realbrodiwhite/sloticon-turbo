@@ -1,22 +1,22 @@
-import React, { useContext, useEffect, useRef } from 'react';
+import { useContext, useEffect, useRef } from 'react';
 import './Game.scss';
 import { useNavigate, useParams } from 'react-router-dom';
 import axios from 'axios';
-import { SocketContext } from '../../context/socket';
+import { SocketContext } from '../src/context/socket';
 import * as PIXI from 'pixi.js';
-import Reel from '../slot/Reel';
-import SlotGame from '../slot/SlotGame';
-import initControls from '../slot/initControls.ts';
+import Reel from '../../slot/Reel';
+import SlotGame from '../../slot/SlotGame';
+import initControls from '../../slot/initControls';
 import gsap from 'gsap';
 
-const Game: React.FC = () => {
-  const elRef = useRef<HTMLDivElement | null>(null);
-  const params = useParams<{ gameId: string }>();
+const Game = (props) => {
+  const elRef = useRef(null);
+  const params = useParams();
   const socket = useContext(SocketContext);
   const navigate = useNavigate();
 
   useEffect(() => {
-    let game: any;
+    let game;
 
     axios.get(`../gamescripts/${params.gameId}.js`).then((response) => {
       game = (new Function(`
@@ -31,26 +31,29 @@ const Game: React.FC = () => {
 
         ${response.data}
       `))(params.gameId, SlotGame, Reel, initControls, socket, PIXI, gsap, () => { navigate('/'); });
-
-      const gameCanvas = elRef.current?.querySelector('canvas');
-
+      
+      const gameCanvas = elRef.current.querySelector('canvas');
+      
       if (gameCanvas) {
         gameCanvas.remove();
       }
 
-      elRef.current?.appendChild(game.renderer.view);
+      elRef.current.appendChild(game.renderer.view);
     });
 
     return () => {
-      if (game) {
-        game.destroy();
-      }
+      game.destroy();
     };
-  }, [params.gameId, navigate, socket]);
+  }, []);
 
   return (
-    <div className="Game" ref={elRef}></div>
+    <div
+      className="Game"
+      ref={elRef}
+    >
+      
+    </div>
   );
-};
+}
 
 export default Game;
