@@ -1,19 +1,19 @@
 import React from 'react';
 
-const HomePage: React.FC = () => {
+const Page: React.FC = () => {
   return (
     <div>
       <h1>Welcome to Sloticon</h1>
-      <p>This is the main landing page of the Sloticon game.</p>
+      <p>a Brodi Branded Inc production - Copyright 2025</p>
     </div>
   );
 };
 
-export const getStaticProps = async () => {
+export async function getStaticProps() {
   // Fetch any necessary data here
   return {
     props: {}, // Pass data to the page via props
   };
-};
+}
 
-export default HomePage;
+export default Page;
